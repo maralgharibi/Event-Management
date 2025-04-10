@@ -29,5 +29,5 @@ class AdminEventMetadataSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class AdminSettingSerializer(serializers.Serializer):
-    owned_events_limit = serializers.IntegerField()
+class AdminSettingSerializer(serializers.Serializer):#مدیریت تنظیمات ادمین
+    owned_events_limit = serializers.IntegerField()#حداکثر تعداد رویدادهایی است که یک کاربر می‌تواند مالک آنها باشه

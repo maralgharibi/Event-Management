@@ -5,6 +5,7 @@ from .models import AdminSettings
 
 User = get_user_model()
 
+
 @admin.register(AdminSettings)
 class AdminSettingsAdmin(admin.ModelAdmin):
     list_display = ('key', 'value')

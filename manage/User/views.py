@@ -36,5 +36,4 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def me(self, request):
-        print("Request META:", request.META)
         return Response(UserSerializer(request.user).data)

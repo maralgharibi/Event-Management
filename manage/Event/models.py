@@ -20,6 +20,7 @@ class Event(models.Model): #نگهداری اطلاعات اصلی و ذاتی �
     class Meta:
         verbose_name = 'Event'
         verbose_name_plural = 'Events'
+        unique_together = ('name', 'location', 'start_time')
 
     def can_be_deleted(self):
         return not self.participants.exists()
@@ -44,7 +45,7 @@ class Event(models.Model): #نگهداری اطلاعات اصلی و ذاتی �
 
 
 class EventMetaData(models.Model): #نگهداری اطلاعات تکمیلی و فراداده
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="eventmetadata")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=50, choices=[('open', 'Open'), ('closed', 'Closed')])

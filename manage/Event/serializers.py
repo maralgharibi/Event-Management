@@ -10,7 +10,7 @@ User = get_user_model()
 class EventMetaDataSerializers(serializers.ModelSerializer):
     class Meta:
         model = EventMetaData
-        fields = ('created_at', 'updated_at','status', 'logs')
+        fields = ('created_at', 'updated_at', 'status', 'logs')
         read_only_fields = ('created_at', 'updated_at')
 
 

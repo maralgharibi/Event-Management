@@ -57,14 +57,17 @@ class AdminEventMetadataViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_fields = ['status', 'event']
 
 
-class AdminSettingViewSet(viewsets.ViewSet):
+class AdminSettingViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = AdminSettingSerializer
     permission_classes = [permissions.IsAuthenticated, IsAdminUser]
 
     def list(self, request):
-        default_owned_events_limit = User._meta.get_field('owned_events_limit').default
+        default_owned_events_limit = User._meta.get_field('owned_events_limit').default# مقدار پیش‌فرض فیلد owned_events_limit از مدل User
         return Response({'owned_events_limit': default_owned_events_limit})
 
-    def update(self, request):
+    @action(detail=False, methods=['put'])
+    def update_setting(self, request):
         serializer = AdminSettingSerializer(data=request.data)
         if serializer.is_valid():
             new_limit = serializer.validated_data['owned_events_limit']
@@ -85,7 +88,7 @@ class AdminReportViewSet(viewsets.ViewSet):
         popular_events_data = [{'id': event.id, 'name': event.name, 'participants': event.num_participants} for event in popular_events]
 
         thirty_days_ago = timezone.now() - timezone.timedelta(days=30)
-        events_last_30_days = Event.objects.filter(EventMetadata__created_at__gte=thirty_days_ago).count()
+        events_last_30_days = Event.objects.filter(eventmetadata__created_at__gte=thirty_days_ago).count()
 
         return Response({
             'total_users': total_users,

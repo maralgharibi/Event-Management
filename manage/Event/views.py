@@ -22,7 +22,7 @@ class EventViewSet(viewsets.ModelViewSet):
             return EventCreateSerializer
         elif self.action == 'update' or self.action == 'partial_update':
             return EventUpdateSerializer
-        return super().get_serializer_class()
+        return super().get_serializer_class() #استفاده از سریالایزر پیش فرض
 
     def create(self, request, *args, **kwargs):
         user = request.user
@@ -30,6 +30,11 @@ class EventViewSet(viewsets.ModelViewSet):
         if open_events_count >= user.owned_events_limit:
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data={'error': 'You have reached the limit for open events.'})
+        if request.data['end_time'] < request.data['start_time']:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'End time cannot be before start time!'})
+        if Event.objects.filter(name=request.data['name'], location=request.data['location'],
+                                start_time=request.data['start_time']).exists():
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'This event already exists!'})
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -37,7 +42,7 @@ class EventViewSet(viewsets.ModelViewSet):
         detailed_serializer = EventDetailSerializers(serializer.instance)
         return Response(detailed_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer):# برا ذخیره شی
         serializer.save(owner=self.request.user)
         EventMetaData.objects.create(event=serializer.instance)
 
@@ -53,7 +58,7 @@ class EventViewSet(viewsets.ModelViewSet):
         user = request.user
         if not event.is_open:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'This event is closed.'})
-        if event.participants.filter(id=user.id).exists():  # Use user.id for comparison
+        if event.participants.filter(id=user.id).exists():
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'You are already participating in this event.'})
         if event.capacity > event.participants.count():
             event.participants.add(user)

@@ -10,5 +10,5 @@ router.register(r'settings', views.AdminSettingViewSet, basename='admin-setting'
 router.register(r'reports', views.AdminReportViewSet, basename='admin-report')
 
 urlpatterns = [
-    path('admin/api/', include(router.urls)),
+    path('admin/', include(router.urls)),
 ]
